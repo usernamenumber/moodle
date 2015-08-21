@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool
  */
 function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course) {
-    global $CFG, $USER, $DB;
+    global $CFG, $USER, $DB, $PAGE;
 
     $usercontext = context_user::instance($user->id, MUST_EXIST);
     $systemcontext = context_system::instance();
@@ -101,8 +101,9 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
         }
     }
 
-    // Preference page. Only visible by administrators.
-    if (!$iscurrentuser && is_siteadmin()) {
+    // Preference page. Only visible by users with access to
+    // one or more of the functions it provides. .
+    if ( ! empty($PAGE->settingsnav->find('userviewingsettings' . $user->id, null))) {
         $url = new moodle_url('/user/preferences.php', array('userid' => $user->id));
         $title = get_string('preferences', 'moodle');
         $node = new core_user\output\myprofile\node('administration', 'preferences', $title, null, $url);
